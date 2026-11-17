@@ -1,24 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import {
-  Play,
-  Pause,
-  RotateCcw,
-  Shuffle,
-  StepForward,
-  Shield,
-  Navigation,
-  Flag,
-  Zap,
-  Sliders,
-  CheckCircle2,
-  AlertTriangle,
-  Grid as GridIcon,
-  Layers,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Play, Pause, RotateCcw, Shuffle, StepForward } from 'lucide-react';
 
 interface ControlPanelProps {
   isRunning: boolean;
@@ -56,215 +39,136 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   phase,
 }) => {
   return (
-    <div className="w-full lg:w-80 flex flex-col gap-5 p-5 rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-slate-800 shadow-2xl shadow-cyan-950/20">
-      {/* Header Badge & Title */}
-      <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
-        <div className="flex items-center gap-2">
-          <div className="p-2 rounded-lg bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 border border-cyan-500/30">
-            <Zap className="w-5 h-5 text-cyan-400" />
-          </div>
-          <div>
-            <h2 className="text-sm font-semibold text-slate-100 tracking-wide">Controls</h2>
-            <p className="text-[11px] text-slate-400 font-mono">Dijkstra Engine</p>
-          </div>
+    <div className="w-full lg:w-[360px] flex flex-col gap-5 p-5 sm:p-6 bg-black/40 backdrop-blur-xl border border-white/10 rounded-[5px] text-white">
+      {/* Header status */}
+      <div className="flex items-center justify-between pb-3 border-b border-white/10">
+        <div>
+          <span className="text-[10px] font-mono uppercase tracking-wider text-white/40 block">Algorithm Engine</span>
+          <span className="text-[14px] font-bold tracking-tight text-white uppercase">Dijkstra Shortest Path</span>
         </div>
-
-        {/* Dynamic Phase Status Badge */}
-        <div
-          className={cn(
-            'px-2.5 py-1 rounded-full text-[10px] font-mono font-medium flex items-center gap-1.5 border',
-            phase === 'found' && 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-            phase === 'unreachable' && 'bg-rose-500/10 text-rose-400 border-rose-500/30',
-            (phase === 'exploring' || phase === 'relaxing') && 'bg-amber-500/10 text-amber-400 border-amber-500/30 animate-pulse',
-            phase === 'init' && 'bg-slate-800 text-slate-400 border-slate-700'
-          )}
+        <span
+          className={`px-2 py-0.5 rounded-[2.5px] text-[10px] font-mono uppercase tracking-wider ${
+            phase === 'found'
+              ? 'bg-[#00ffc2] text-black font-bold'
+              : phase === 'unreachable'
+              ? 'bg-[#ff3366] text-white font-bold'
+              : phase === 'exploring' || phase === 'relaxing'
+              ? 'bg-[#20e7b7]/20 text-[#20e7b7] border border-[#20e7b7]/50 animate-pulse'
+              : 'bg-white/10 text-white/60'
+          }`}
         >
-          {phase === 'found' && <CheckCircle2 className="w-3 h-3 text-emerald-400" />}
-          {phase === 'unreachable' && <AlertTriangle className="w-3 h-3 text-rose-400" />}
-          {phase === 'found'
-            ? 'PATH FOUND'
-            : phase === 'unreachable'
-            ? 'NO PATH'
-            : isRunning
-            ? 'COMPUTING'
-            : 'READY'}
+          {phase}
+        </span>
+      </div>
+
+      {/* Primary Actions */}
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          onClick={onTogglePlay}
+          className="button-primary flex items-center justify-center gap-2 py-3 px-4 font-bold uppercase tracking-wider text-[12px] bg-white text-black hover:bg-[#00ffc2] transition-colors duration-200"
+        >
+          {isRunning ? (
+            <>
+              <Pause className="w-4 h-4 fill-current" /> Pause
+            </>
+          ) : (
+            <>
+              <Play className="w-4 h-4 fill-current" /> Run Dijkstra
+            </>
+          )}
+        </button>
+
+        <button
+          onClick={onStep}
+          disabled={isRunning}
+          className="button-primary flex items-center justify-center gap-1.5 py-3 px-3 uppercase tracking-wider text-[10px] bg-white/10 text-white border border-white/15 hover:border-white/40 disabled:opacity-40"
+        >
+          <StepForward className="w-3.5 h-3.5" /> Step Next
+        </button>
+      </div>
+
+      {/* Secondary Controls: Reset & Randomize */}
+      <div className="flex items-center gap-2">
+        <button
+          onClick={onReset}
+          className="flex-1 button-primary py-2 px-3 flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-wider border border-white/10 hover:border-white/30"
+        >
+          <RotateCcw className="w-3 h-3" /> Reset Engine
+        </button>
+        <button
+          onClick={onClearObstacles}
+          className="button-primary py-2 px-3 text-[10px] uppercase tracking-wider border border-white/10 hover:border-white/30 text-white/70"
+        >
+          Clear Walls
+        </button>
+      </div>
+
+      {/* Discrete Mode Selector */}
+      <div className="flex flex-col gap-2 pt-2 border-t border-white/10">
+        <label className="text-[10px] font-mono uppercase tracking-wider text-white/50">Edit Tool Target</label>
+        <div className="grid grid-cols-3 gap-1.5 bg-white/[0.03] p-1 rounded-[5px] border border-white/10">
+          {(['obstacle', 'start', 'target'] as const).map((mode) => (
+            <button
+              key={mode}
+              onClick={() => onToolModeChange(mode)}
+              className={`py-1.5 text-[10px] uppercase font-mono tracking-wider rounded-[3px] transition-all duration-200 ${
+                toolMode === mode
+                  ? 'bg-white text-black font-bold shadow-sm'
+                  : 'text-white/50 hover:text-white'
+              }`}
+            >
+              {mode}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Main Execution Controls */}
-      <div className="flex flex-col gap-2.5">
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            onClick={onTogglePlay}
-            disabled={phase === 'found' || phase === 'unreachable'}
-            className={cn(
-              'flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold tracking-wide transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed',
-              isRunning
-                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30'
-                : 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold shadow-cyan-500/20'
-            )}
-          >
-            {isRunning ? (
-              <>
-                <Pause className="w-4 h-4 fill-amber-300 stroke-amber-300" />
-                <span>Pause</span>
-              </>
-            ) : (
-              <>
-                <Play className="w-4 h-4 fill-slate-950 stroke-slate-950" />
-                <span>Start Routing</span>
-              </>
-            )}
-          </button>
-
-          <button
-            onClick={onStep}
-            disabled={isRunning || phase === 'found' || phase === 'unreachable'}
-            className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-medium text-slate-200 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <StepForward className="w-4 h-4 text-cyan-400" />
-            <span>Step</span>
-          </button>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            onClick={onReset}
-            className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs text-slate-300 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/80 transition-all active:scale-95"
-          >
-            <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
-            <span>Reset Path</span>
-          </button>
-
-          <button
-            onClick={onClearObstacles}
-            className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs text-slate-300 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/80 transition-all active:scale-95"
-          >
-            <GridIcon className="w-3.5 h-3.5 text-slate-400" />
-            <span>Clear Grid</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Preset Map Selection */}
-      <div className="flex flex-col gap-2 pt-2 border-t border-slate-800/80">
-        <label className="text-[11px] font-mono text-slate-400 flex items-center justify-between">
-          <span className="flex items-center gap-1.5">
-            <Layers className="w-3.5 h-3.5 text-indigo-400" />
-            Roadblock Layouts
-          </span>
-        </label>
-        <div className="grid grid-cols-2 gap-1.5">
-          <button
-            onClick={() => onPresetSelect('random')}
-            className="flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg text-[11px] font-mono text-slate-300 bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700/60 transition-all"
-          >
-            <Shuffle className="w-3 h-3 text-cyan-400" />
-            Randomize
-          </button>
-          <button
-            onClick={() => onPresetSelect('maze')}
-            className="flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg text-[11px] font-mono text-slate-300 bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700/60 transition-all"
-          >
-            Maze Pattern
-          </button>
-          <button
-            onClick={() => onPresetSelect('center')}
-            className="flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg text-[11px] font-mono text-slate-300 bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700/60 transition-all"
-          >
-            Center Block
-          </button>
-          <button
-            onClick={() => onPresetSelect('spiral')}
-            className="flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg text-[11px] font-mono text-slate-300 bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700/60 transition-all"
-          >
-            Spiral Tunnel
-          </button>
-        </div>
-      </div>
-
-      {/* Interactive Tool Mode Selection */}
-      <div className="flex flex-col gap-2 pt-2 border-t border-slate-800/80">
-        <label className="text-[11px] font-mono text-slate-400">Click & Drag Tool Mode</label>
+      {/* Maze Presets */}
+      <div className="flex flex-col gap-2">
+        <label className="text-[10px] font-mono uppercase tracking-wider text-white/50">Topology Presets</label>
         <div className="grid grid-cols-3 gap-1.5">
-          <button
-            onClick={() => onToolModeChange('obstacle')}
-            className={cn(
-              'flex flex-col items-center justify-center p-2 rounded-xl text-[11px] font-mono transition-all border',
-              toolMode === 'obstacle'
-                ? 'bg-slate-800 text-cyan-300 border-cyan-500/50 shadow-sm shadow-cyan-500/20'
-                : 'bg-slate-900/50 text-slate-400 border-slate-800 hover:bg-slate-800/50'
-            )}
-          >
-            <Shield className="w-3.5 h-3.5 mb-1 text-slate-400" />
-            <span>Obstacle</span>
-          </button>
-
-          <button
-            onClick={() => onToolModeChange('start')}
-            className={cn(
-              'flex flex-col items-center justify-center p-2 rounded-xl text-[11px] font-mono transition-all border',
-              toolMode === 'start'
-                ? 'bg-emerald-950/60 text-emerald-300 border-emerald-500/50 shadow-sm shadow-emerald-500/20'
-                : 'bg-slate-900/50 text-slate-400 border-slate-800 hover:bg-slate-800/50'
-            )}
-          >
-            <Navigation className="w-3.5 h-3.5 mb-1 text-emerald-400" />
-            <span>Start Node</span>
-          </button>
-
-          <button
-            onClick={() => onToolModeChange('target')}
-            className={cn(
-              'flex flex-col items-center justify-center p-2 rounded-xl text-[11px] font-mono transition-all border',
-              toolMode === 'target'
-                ? 'bg-rose-950/60 text-rose-300 border-rose-500/50 shadow-sm shadow-rose-500/20'
-                : 'bg-slate-900/50 text-slate-400 border-slate-800 hover:bg-slate-800/50'
-            )}
-          >
-            <Flag className="w-3.5 h-3.5 mb-1 text-rose-400" />
-            <span>Target Node</span>
-          </button>
+          {(['maze', 'spiral', 'center', 'random', 'none'] as const).map((preset) => (
+            <button
+              key={preset}
+              onClick={() => onPresetSelect(preset)}
+              className="py-1.5 px-2 bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 rounded-[3px] text-[10px] font-mono uppercase tracking-wider text-white/70 hover:text-white transition-all text-center"
+            >
+              {preset}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Speed Slider */}
-      <div className="flex flex-col gap-2 pt-2 border-t border-slate-800/80">
-        <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
-          <span className="flex items-center gap-1.5">
-            <Sliders className="w-3.5 h-3.5 text-cyan-400" />
-            Animation Delay
-          </span>
-          <span className="text-cyan-300">{speed} ms</span>
+      {/* Execution Speed */}
+      <div className="flex flex-col gap-1.5 pt-2 border-t border-white/10">
+        <div className="flex justify-between items-center text-[10px] font-mono uppercase text-white/50">
+          <span>Simulation Latency</span>
+          <span className="text-[#00ffc2]">{speed}ms</span>
         </div>
         <input
           type="range"
           min="10"
-          max="300"
-          step="10"
+          max="200"
+          step="5"
           value={speed}
           onChange={(e) => onSpeedChange(Number(e.target.value))}
-          className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+          className="w-full accent-[#00ffc2] cursor-pointer h-1 bg-white/20 rounded-lg appearance-none"
         />
       </div>
 
-      {/* Live Algorithm Telemetry Counters */}
-      <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-800/80">
-        <div className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800/80 flex flex-col items-center justify-center">
-          <span className="text-[10px] font-mono text-slate-400">Set S</span>
-          <span className="text-sm font-bold font-mono text-indigo-400">{setSCount}</span>
+      {/* Discrete State Counter Matrix */}
+      <div className="grid grid-cols-3 gap-2 pt-3 border-t border-white/10 text-center font-mono">
+        <div className="p-2 rounded-[3px] bg-white/[0.03] border border-white/10">
+          <span className="text-[10px] text-white/40 block">|S| (Settled)</span>
+          <span className="text-[14px] font-bold text-[#20e7b7]">{setSCount}</span>
         </div>
-
-        <div className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800/80 flex flex-col items-center justify-center">
-          <span className="text-[10px] font-mono text-slate-400">Set Q</span>
-          <span className="text-sm font-bold font-mono text-slate-300">{setQCount}</span>
+        <div className="p-2 rounded-[3px] bg-white/[0.03] border border-white/10">
+          <span className="text-[10px] text-white/40 block">|Q| (Unvisited)</span>
+          <span className="text-[14px] font-bold text-white">{setQCount}</span>
         </div>
-
-        <div className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800/80 flex flex-col items-center justify-center">
-          <span className="text-[10px] font-mono text-slate-400">Path Cost</span>
-          <span className="text-sm font-bold font-mono text-emerald-400">
-            {pathLength > 0 ? pathLength - 1 : '—'}
-          </span>
+        <div className="p-2 rounded-[3px] bg-white/[0.03] border border-white/10">
+          <span className="text-[10px] text-white/40 block">Path Cost</span>
+          <span className="text-[14px] font-bold text-[#00ffc2]">{pathLength > 0 ? pathLength - 1 : 0}</span>
         </div>
       </div>
     </div>

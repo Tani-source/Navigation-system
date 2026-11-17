@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import confetti from 'canvas-confetti';
-import { Sparkles, Brain, Code2, Network, ShieldCheck } from 'lucide-react';
 import { Grid } from '@/components/Grid';
 import { ControlPanel } from '@/components/ControlPanel';
 import { DiscreteMathInspector } from '@/components/DiscreteMathInspector';
@@ -77,12 +76,10 @@ export default function Home() {
     }
   }, [obstacles, startNode, targetNode]);
 
-  // Re-initialize generator whenever graph configuration changes
   useEffect(() => {
     resetAlgorithm();
   }, [resetAlgorithm]);
 
-  // Advance single step of Dijkstra's generator
   const advanceStep = useCallback(() => {
     if (!generatorRef.current) return;
 
@@ -104,10 +101,10 @@ export default function Home() {
         setIsRunning(false);
         if (timerRef.current) clearInterval(timerRef.current);
         confetti({
-          particleCount: 70,
+          particleCount: 50,
           spread: 60,
           origin: { y: 0.8 },
-          colors: ['#34d399', '#38bdf8', '#818cf8'],
+          colors: ['#00ffc2', '#20e7b7', '#ffffff'],
         });
       } else if (step.phase === 'unreachable') {
         setIsRunning(false);
@@ -121,7 +118,6 @@ export default function Home() {
     }
   }, []);
 
-  // Animation Timer Loop
   useEffect(() => {
     if (isRunning) {
       timerRef.current = setInterval(() => {
@@ -179,52 +175,44 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950 relative overflow-x-hidden">
-      {/* Dynamic Background Glow Effect */}
-      <div className="absolute top-0 left-1/4 w-[600px] h-[400px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none -z-10" />
-      <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[160px] pointer-events-none -z-10" />
-
-      {/* Header Bar */}
-      <header className="border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 shadow-lg shadow-cyan-500/20 text-slate-950 font-bold">
-              <Brain className="w-6 h-6 stroke-[2.5]" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold tracking-tight bg-gradient-to-r from-slate-100 via-slate-200 to-slate-400 bg-clip-text text-transparent">
-                  Predictive Routing
-                </h1>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-cyan-950 text-cyan-300 border border-cyan-800/60">
-                  Dijkstra Engine
-                </span>
-              </div>
-              <p className="text-xs text-slate-400 font-mono">
-                Discrete Mathematics Proof & Adjacency Matrix Visualizer
-              </p>
-            </div>
-          </div>
-
-          {/* Quick Info Badges */}
-          <div className="hidden md:flex items-center gap-3 text-xs font-mono text-slate-400">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800">
-              <Network className="w-3.5 h-3.5 text-cyan-400" />
-              <span>100×100 Matrix W</span>
-            </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800">
-              <Code2 className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Generator function*</span>
-            </div>
-          </div>
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-[#00ffc2] selection:text-black flex flex-col">
+      {/* nk.studio Header Bar */}
+      <header className="w-full flex items-center justify-between px-5 sm:px-10 h-[88px] border-b border-white/10 bg-black/60 backdrop-blur-xl sticky top-0 z-50">
+        <div>
+          <span className="font-bold tracking-tight text-[16px] sm:text-[18px] uppercase">
+            NK.STUDIO <span className="text-[#00ffc2] font-normal">/ PREDICTIVE ROUTING</span>
+          </span>
+        </div>
+        <div className="flex items-center gap-4 sm:gap-6">
+          <span className="hidden sm:inline-block text-[10px] font-mono uppercase tracking-widest text-white/50">
+            W ∈ ℝ¹⁰⁰ˣ¹⁰⁰ • Single-Source Shortest Path
+          </span>
+          <button
+            onClick={resetAlgorithm}
+            className="button-primary text-[10px] uppercase font-mono tracking-wider py-1.5 px-3 border border-white/20 text-white hover:border-[#00ffc2] hover:text-[#00ffc2]"
+          >
+            Reset Engine
+          </button>
         </div>
       </header>
 
-      {/* Main Workspace Body */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full flex flex-col gap-8">
-        {/* Main 2-Column Grid & Controls View */}
-        <div className="flex flex-col lg:flex-row items-start justify-center gap-6">
-          {/* Visual 10x10 Grid View */}
+      {/* Main Dedicated Laboratory Workspace */}
+      <main className="flex-1 max-w-[1440px] w-full mx-auto px-5 sm:px-10 py-10 sm:py-14 flex flex-col gap-10">
+        {/* Title & Introduction */}
+        <div>
+          <span className="text-[10px] uppercase tracking-widest text-[#00ffc2] font-mono block mb-2">
+            DISCRETE MATHEMATICS & GRAPH THEORY ENGINE
+          </span>
+          <h1 className="text-[40px] sm:text-[70px] lg:text-[90px] font-medium leading-[0.92] tracking-[-0.03em] text-white">
+            The Engine.
+          </h1>
+          <p className="mt-3 text-[14px] sm:text-[18px] leading-[25px] text-white/70 max-w-[720px]">
+            Interactive Single-Source Shortest Path (Dijkstra) solver running over a 100-vertex discrete lattice graph with live Adjacency Matrix inspection and formal set proofs.
+          </p>
+        </div>
+
+        {/* Interactive Visualizer Canvas & Controls */}
+        <div className="flex flex-col lg:flex-row items-start justify-center gap-8">
           <div className="flex-1 w-full flex justify-center">
             <Grid
               startNode={startNode}
@@ -243,7 +231,6 @@ export default function Home() {
             />
           </div>
 
-          {/* Control Panel Sidebar */}
           <ControlPanel
             isRunning={isRunning}
             onTogglePlay={handleTogglePlay}
@@ -263,25 +250,34 @@ export default function Home() {
           />
         </div>
 
-        {/* Discrete Math Real-Time Matrix & Set Inspector */}
-        <DiscreteMathInspector
-          adjMatrix={adjMatrix}
-          setS={setS}
-          setQ={setQ}
-          distances={distances}
-          previous={previous}
-          currentNode={currentNode}
-          evaluatingNeighbor={evaluatingNeighbor}
-          hoveredNode={hoveredNode}
-          startNode={startNode}
-          targetNode={targetNode}
-        />
-      </div>
+        {/* Real-Time Formal Discrete Mathematics Inspector */}
+        <div className="w-full">
+          <DiscreteMathInspector
+            adjMatrix={adjMatrix}
+            setS={setS}
+            setQ={setQ}
+            distances={distances}
+            previous={previous}
+            currentNode={currentNode}
+            evaluatingNeighbor={evaluatingNeighbor}
+            hoveredNode={hoveredNode}
+            startNode={startNode}
+            targetNode={targetNode}
+          />
+        </div>
+      </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950 py-4 px-6 text-center text-xs font-mono text-slate-600">
-        Predictive Routing Visualizer • Powered by Next.js, Framer Motion & Kokonut UI aesthetic
+      {/* Minimal Footer */}
+      <footer className="border-t border-white/10 py-6 px-5 sm:px-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-mono text-white/50">
+        <div>
+          <span>PREDICTIVE ROUTING ENGINE • VIT DISCRETE MATHEMATICS</span>
+        </div>
+        <div className="flex items-center gap-6">
+          <span>|V| = 100</span>
+          <span>|E| ≤ 180</span>
+          <span className="text-[#00ffc2]">NK.STUDIO MINIMALIST DESIGN</span>
+        </div>
       </footer>
-    </main>
+    </div>
   );
 }

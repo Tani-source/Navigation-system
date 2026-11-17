@@ -1,32 +1,137 @@
 @import "tailwindcss";
 
 :root {
-  --background: #020617;
-  --foreground: #f8fafc;
+  --cta-underline-height: 2px;
+  --wrapper-width: var(--layout-page-width);
+  --wrapper-gutter-mobile: var(--layout-gutter);
+  --wrapper-gutter-desktop: var(--layout-gutter);
+  --layout-container-max: 1440px;
+  --layout-container-narrow: 800px;
+  --layout-header-max: 1440px;
+  --layout-menu-max: 880px;
+  --layout-menu-inset-y: 20px;
+  --layout-menu-inset-y-sm: 10px;
+  --layout-page-width: 1440px;
+  --layout-gutter: 20px;
+  --layout-columns: 12;
+  --layout-viewport-width: 100vw;
+  --header-height: 88px;
+
+  /* NK Studio exact typography & tokens */
+  --font-body: "DM Sans", "DM Sans Fallback", system-ui, sans-serif;
+  --text-size-body-md: 18px;
+  --leading-body-md: 25px;
+  --text-size-label-xs: 10px;
+  --radius-sm: 5px;
+  --color-accent: #00ffc2;
+  --color-accent-2: #20e7b7;
+  --color-white: #ffffff;
+  --ease-back-out: cubic-bezier(0.18, 1, 0.32, 1);
+  --duration-fast: 0.25s;
 }
 
 body {
-  background-color: #020617;
-  color: #f8fafc;
+  font-family: var(--font-body);
+  background-color: #ffffff;
+  color: #000000;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Custom sleek scrollbar for inspector panels */
+/* Button & Input component classes measured from live page */
+.button-primary {
+  background: #FFFFFF1A;
+  color: #ffffff;
+  border-radius: 5px;
+  font-size: 10px;
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  transition: all 0.25s cubic-bezier(0.18, 1, 0.32, 1);
+}
+
+.button-primary:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.button-style-1 {
+  background: transparent;
+  color: #000000;
+  border-radius: 0px;
+  padding: 6.25px 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.32px;
+  text-transform: uppercase;
+  transition: color 0.25s ease;
+}
+
+.button-style-2 {
+  background: transparent;
+  color: #000000;
+  border-radius: 5px;
+  padding: 0px;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 15px;
+}
+
+.input {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.32px;
+  text-transform: uppercase;
+}
+
+/* Animations defined on the reference page */
+@keyframes form-footer-sending-dot {
+  0%, 80%, 100% { opacity: 0; }
+  40% { opacity: 1; }
+}
+
+@keyframes s-swap-in {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes s-swap-out {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-100%); opacity: 0; }
+}
+
+@keyframes custom-cursor-play-marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-s-swap-in {
+  animation: s-swap-in 0.42s cubic-bezier(0.18, 1, 0.32, 1) forwards;
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: custom-cursor-play-marquee 25s linear infinite;
+}
+
+/* Minimal sleek scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
-
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
-  border-radius: 9999px;
+  background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.8);
-  border-radius: 9999px;
+  background: #0000001A;
+  border-radius: 5px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.8);
+  background: #00000033;
 }
